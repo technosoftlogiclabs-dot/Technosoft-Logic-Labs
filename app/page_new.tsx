@@ -151,5 +151,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+       </main> 
+  );
+}
 
       [Rest of the file remains the same with News and Contact sections...]
