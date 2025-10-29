@@ -155,4 +155,4 @@ export default function Home() {
   );
 }
 
-      [Rest of the file remains the same with News and Contact sections...]
+     
