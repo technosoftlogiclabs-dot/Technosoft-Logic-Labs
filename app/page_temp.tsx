@@ -151,5 +151,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+</main>
+  );
+}
 
-      [... Rest of the file remains unchanged ...]
+      
