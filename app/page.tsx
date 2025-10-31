@@ -128,8 +128,212 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Technologies Section */}
+      <section id="technologies" className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl font-bold text-center mb-16">Tehnologiile Noastre</h2>
+          <p className="text-xl text-gray-600 text-center mb-8 max-w-3xl mx-auto">
+            Cu ajutorul AI-ului și tehnologiilor moderne, construim soluții robuste și scalabile pentru afacerea ta
+          </p>
+          
+          {/* AI-Powered Development Approach */}
+          <div className="bg-gradient-to-r from-indigo-600 to-blue-600 rounded-2xl p-8 mb-16 text-white max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold mb-4 flex items-center justify-center">
+                <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Dezvoltare Asistată de AI
+              </h3>
+              <p className="text-lg opacity-90">
+                Folosim inteligența artificială avansată pentru a accelera dezvoltarea și a asigura calitatea codului
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+              <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                <div className="text-3xl mb-2">🤖</div>
+                <h4 className="font-semibold mb-2">AI Assistant</h4>
+                <p className="text-sm opacity-80">GitHub Copilot & ChatGPT pentru cod optimizat</p>
+              </div>
+              <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                <div className="text-3xl mb-2">⚡</div>
+                <h4 className="font-semibold mb-2">Dezvoltare Rapidă</h4>
+                <p className="text-sm opacity-80">Prototipuri și MVP-uri în timp record</p>
+              </div>
+              <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                <div className="text-3xl mb-2">🎯</div>
+                <h4 className="font-semibold mb-2">Calitate Superioară</h4>
+                <p className="text-sm opacity-80">Cod reviewuit și optimizat de AI</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
+            {/* Frontend Technologies */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 shadow-lg">
+              <h3 className="text-2xl font-bold mb-6 text-blue-900 flex items-center">
+                <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Frontend Development
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  { name: 'React', icon: '⚛️', url: 'https://react.dev/' },
+                  { name: 'Next.js', icon: '▲', url: 'https://nextjs.org/' },
+                  { name: 'TypeScript', icon: '📘', url: 'https://www.typescriptlang.org/' },
+                  { name: 'Tailwind CSS', icon: '🎨', url: 'https://tailwindcss.com/' },
+                  { name: 'JavaScript', icon: '🟨', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript' },
+                  { name: 'HTML5/CSS3', icon: '🌐', url: 'https://developer.mozilla.org/en-US/docs/Web/HTML' }
+                ].map((tech) => (
+                  <a 
+                    key={tech.name} 
+                    href={tech.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-300 text-center transform hover:scale-105 cursor-pointer group"
+                  >
+                    <div className="text-2xl mb-2">{tech.icon}</div>
+                    <div className="font-medium text-gray-800 group-hover:text-blue-600">{tech.name}</div>
+                    <div className="text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1">
+                      Vezi documentația
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Backend Technologies */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 shadow-lg">
+              <h3 className="text-2xl font-bold mb-6 text-green-900 flex items-center">
+                <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                </svg>
+                Backend Development
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  { name: 'Node.js', icon: '🟢', url: 'https://nodejs.org/' },
+                  { name: 'Express.js', icon: '🚀', url: 'https://expressjs.com/' },
+                  { name: 'Python', icon: '🐍', url: 'https://www.python.org/' },
+                  { name: 'PHP', icon: '🐘', url: 'https://www.php.net/' },
+                  { name: 'Laravel', icon: '🔴', url: 'https://laravel.com/' },
+                  { name: 'REST APIs', icon: '🔌', url: 'https://restfulapi.net/' }
+                ].map((tech) => (
+                  <a 
+                    key={tech.name} 
+                    href={tech.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-300 text-center transform hover:scale-105 cursor-pointer group"
+                  >
+                    <div className="text-2xl mb-2">{tech.icon}</div>
+                    <div className="font-medium text-gray-800 group-hover:text-green-600">{tech.name}</div>
+                    <div className="text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1">
+                      Vezi documentația
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            {/* Mobile Technologies */}
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 shadow-lg">
+              <h3 className="text-2xl font-bold mb-6 text-purple-900 flex items-center">
+                <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a1 1 0 001-1V4a1 1 0 00-1-1H8a1 1 0 00-1 1v16a1 1 0 001 1z" />
+                </svg>
+                Mobile Development
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  { name: 'React Native', icon: '📱', url: 'https://reactnative.dev/' },
+                  { name: 'Flutter', icon: '🦋', url: 'https://flutter.dev/' },
+                  { name: 'Ionic', icon: '⚡', url: 'https://ionicframework.com/' },
+                  { name: 'Swift', icon: '🍎', url: 'https://swift.org/' },
+                  { name: 'Kotlin', icon: '🤖', url: 'https://kotlinlang.org/' },
+                  { name: 'Xamarin', icon: '💜', url: 'https://dotnet.microsoft.com/en-us/apps/xamarin' }
+                ].map((tech) => (
+                  <a 
+                    key={tech.name} 
+                    href={tech.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-300 text-center transform hover:scale-105 cursor-pointer group"
+                  >
+                    <div className="text-2xl mb-2">{tech.icon}</div>
+                    <div className="font-medium text-gray-800 group-hover:text-purple-600">{tech.name}</div>
+                    <div className="text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1">
+                      Vezi documentația
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Database & Tools */}
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-8 shadow-lg">
+              <h3 className="text-2xl font-bold mb-6 text-orange-900 flex items-center">
+                <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                </svg>
+                Database & Tools
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  { name: 'MySQL', icon: '🐬', url: 'https://www.mysql.com/' },
+                  { name: 'PostgreSQL', icon: '🐘', url: 'https://www.postgresql.org/' },
+                  { name: 'MongoDB', icon: '🍃', url: 'https://www.mongodb.com/' },
+                  { name: 'Firebase', icon: '🔥', url: 'https://firebase.google.com/' },
+                  { name: 'Git', icon: '📝', url: 'https://git-scm.com/' },
+                  { name: 'Docker', icon: '🐳', url: 'https://www.docker.com/' }
+                ].map((tech) => (
+                  <a 
+                    key={tech.name} 
+                    href={tech.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-300 text-center transform hover:scale-105 cursor-pointer group"
+                  >
+                    <div className="text-2xl mb-2">{tech.icon}</div>
+                    <div className="font-medium text-gray-800 group-hover:text-orange-600">{tech.name}</div>
+                    <div className="text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1">
+                      Vezi documentația
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center mt-16">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white">
+              <h3 className="text-2xl font-bold mb-4">Pregătit să Construim Ceva Extraordinar?</h3>
+              <p className="text-lg mb-6 opacity-90">
+                Prin combinarea expertizei umane cu asistența AI avansată, transformăm ideile tale în realitate
+              </p>
+              <button
+                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                className="inline-flex items-center bg-white text-blue-600 px-8 py-3 rounded-full
+                  hover:bg-gray-100 transform hover:scale-105 transition-all duration-300
+                  shadow-lg hover:shadow-xl text-lg font-semibold"
+              >
+                Să Discutăm Proiectul Tău
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Services Section with Hover Cards */}
-      <section id="services" className="py-20 bg-white relative overflow-hidden">
+      <section id="services" className="py-20 bg-gray-50 relative overflow-hidden">
         <div className="container mx-auto px-6 relative z-20">
           <h2 className="text-4xl font-bold text-center mb-16">
             Serviciile Noastre
@@ -317,6 +521,26 @@ export default function Home() {
                     <path
                       fillRule="evenodd"
                       d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/technosoft-logic-labs/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-700 hover:bg-blue-800 p-3 rounded-full transition-all duration-300"
+                  aria-label="Conectează-te cu noi pe LinkedIn"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
                       clipRule="evenodd"
                     />
                   </svg>
