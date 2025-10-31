@@ -164,7 +164,7 @@ export default function Home() {
               <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                 <div className="text-3xl mb-2">🎯</div>
                 <h4 className="font-semibold mb-2">Calitate Superioară</h4>
-                <p className="text-sm opacity-80">Cod reviewuit și optimizat de AI</p>
+                <p className="text-sm opacity-80">Cod revizuit și optimizat de AI</p>
               </div>
             </div>
           </div>
