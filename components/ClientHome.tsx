@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import ContentPanel from "@/components/ContentPanel";
 import { CubeFace, faceOrientations, tileById, tiles } from "@/lib/tiles";
 import { useUIStore } from "@/lib/ui-store";
@@ -222,19 +222,6 @@ function HomeContent() {
     query.delete("panel");
     const nextQuery = query.toString();
     router.replace(nextQuery ? `/?${nextQuery}` : "/", { scroll: false });
-  };
-
-  const navigateFromPage = (key: "Acasă" | "Servicii" | "Soluții" | "Tehnologii" | "FAQ" | "Contact") => {
-    const menuToAction: Record<string, { panelId: string }> = {
-      "Acasă": { panelId: "about" },
-      Servicii: { panelId: "services" },
-      "Soluții": { panelId: "solutions" },
-      Tehnologii: { panelId: "tech-stack" },
-      FAQ: { panelId: "portfolio" },
-      Contact: { panelId: "contact" }
-    };
-    const action = menuToAction[key] ?? menuToAction["Acasă"];
-    openPanel(action.panelId);
   };
 
   const navigateFromTile = (panelId: string) => {

@@ -204,6 +204,18 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
     return points;
   }, []);
 
+  const scheduleNextFaceTurn = useCallback((minDelay = RUBIK_IDLE_TURN_MIN_DELAY_MS, maxDelay = RUBIK_IDLE_TURN_MAX_DELAY_MS) => {
+    nextFaceTurnAtRef.current = Date.now() + THREE.MathUtils.randInt(minDelay, maxDelay);
+  }, []);
+
+  const clearFaceTurnAnimation = useCallback((resetSchedule = false) => {
+    faceTurnAnimationRef.current = null;
+    activeFaceTurnsRef.current = [];
+    if (resetSchedule) {
+      scheduleNextFaceTurn();
+    }
+  }, [scheduleNextFaceTurn]);
+
   useEffect(() => {
     if (!groupRef.current || !targetOrientation) return;
 
@@ -228,7 +240,7 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
     setIsAutoRotating(true);
     gl.domElement.style.cursor = "default";
     setTargetOrientation(null);
-  }, [targetOrientation, reducedMotion, setTargetOrientation, gl, camera]);
+  }, [targetOrientation, reducedMotion, setTargetOrientation, gl, camera, clearFaceTurnAnimation]);
 
   useEffect(() => {
     const clearHover = () => scheduleHoverClear();
@@ -249,7 +261,9 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
 
       setControlsEnabled(isPointerOnCube);
       if (!isPointerOnCube) {
-        controlsRef.current && (controlsRef.current.enabled = false);
+        if (controlsRef.current) {
+          controlsRef.current.enabled = false;
+        }
         gl.domElement.style.cursor = "default";
         event.stopImmediatePropagation();
       }
@@ -330,7 +344,7 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
     cancelHoverClear();
     setHovered(null);
     clearFaceTurnAnimation(true);
-  }, [openPanelId, cancelHoverClear]);
+  }, [openPanelId, cancelHoverClear, clearFaceTurnAnimation]);
 
   useEffect(() => {
     onHoverLabelChange?.(hovered?.label ?? null);
@@ -365,18 +379,6 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
   const registerInteraction = () => {
     lastInteractionRef.current = Date.now();
   };
-
-  function scheduleNextFaceTurn(minDelay = RUBIK_IDLE_TURN_MIN_DELAY_MS, maxDelay = RUBIK_IDLE_TURN_MAX_DELAY_MS) {
-    nextFaceTurnAtRef.current = Date.now() + THREE.MathUtils.randInt(minDelay, maxDelay);
-  }
-
-  function clearFaceTurnAnimation(resetSchedule = false) {
-    faceTurnAnimationRef.current = null;
-    activeFaceTurnsRef.current = [];
-    if (resetSchedule) {
-      scheduleNextFaceTurn();
-    }
-  }
 
   function startIdleFaceTurn() {
     const axisChoices = FACE_TURN_AXES.filter((candidate) => candidate !== lastIdleTurnAxisRef.current);
