@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="10" y1="8" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f2f33" />
+      <stop offset="1" stop-color="#08161f" />
+    </linearGradient>
+    <linearGradient id="top" x1="18" y1="15" x2="46" y2="31" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9be7ff" />
+      <stop offset="1" stop-color="#5fd4f4" />
+    </linearGradient>
+    <linearGradient id="left" x1="14" y1="22" x2="33" y2="51" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1697bb" />
+      <stop offset="1" stop-color="#0d5f79" />
+    </linearGradient>
+    <linearGradient id="right" x1="32" y1="22" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#43c7ea" />
+      <stop offset="1" stop-color="#1686a8" />
+    </linearGradient>
+    <filter id="glow" x="6" y="4" width="52" height="56" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="4" />
+    </filter>
+  </defs>
+
+  <rect x="5" y="5" width="54" height="54" rx="15" fill="url(#bg)" />
+  <path d="M18 18L32 11L46 18L32 25L18 18Z" fill="#6ee7ff" fill-opacity=".65" filter="url(#glow)" />
+
+  <path d="M32 11L50 22L32 33L14 22L32 11Z" fill="url(#top)" stroke="#d8f6ff" stroke-width="1.4" stroke-linejoin="round" />
+  <path d="M14 22L32 33V53L14 42V22Z" fill="url(#left)" stroke="#9be7ff" stroke-width="1.4" stroke-linejoin="round" />
+  <path d="M50 22L32 33V53L50 42V22Z" fill="url(#right)" stroke="#d8f6ff" stroke-width="1.4" stroke-linejoin="round" />
+
+  <ellipse cx="24" cy="22" rx="3.6" ry="2.2" fill="#ecfeff" fill-opacity=".95" />
+  <ellipse cx="32" cy="18" rx="3.6" ry="2.2" fill="#ecfeff" fill-opacity=".95" />
+  <ellipse cx="40" cy="22" rx="3.6" ry="2.2" fill="#ecfeff" fill-opacity=".95" />
+  <ellipse cx="24" cy="22.8" rx="2.4" ry="1.4" fill="#67e8f9" fill-opacity=".85" />
+  <ellipse cx="32" cy="18.8" rx="2.4" ry="1.4" fill="#67e8f9" fill-opacity=".85" />
+  <ellipse cx="40" cy="22.8" rx="2.4" ry="1.4" fill="#67e8f9" fill-opacity=".85" />
+
+  <path d="M32 33V53" stroke="#d8f6ff" stroke-width="1.2" stroke-opacity=".85" />
+  <path d="M23 27.5L23 47.2" stroke="#d8f6ff" stroke-width="1" stroke-opacity=".18" />
+  <path d="M41 27.5L41 47.2" stroke="#d8f6ff" stroke-width="1" stroke-opacity=".18" />
+</svg>

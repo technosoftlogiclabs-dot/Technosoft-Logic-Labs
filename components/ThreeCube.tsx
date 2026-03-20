@@ -134,7 +134,7 @@ const FACE_BASE_QUATERNIONS: Record<CubeFace, THREE.Quaternion> = {
 };
 
 function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onHoverLabelChange, onAutoRotateComplete }: Props) {
-  const { gl, camera } = useThree();
+  const { gl, camera, invalidate } = useThree();
   const controlsRef = useRef<TrackballControlsImpl | null>(null);
   const groupRef = useRef<THREE.Group>(null);
   const pointerNdcRef = useRef(new THREE.Vector2());
@@ -150,12 +150,19 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
   const hoverResumeTimerRef = useRef<number | null>(null);
   const cubieMeshRefs = useRef<Map<string, THREE.Mesh>>(new Map());
   const stickerGroupRefs = useRef<Map<string, THREE.Group>>(new Map());
+  const stickerLabelGroupRefs = useRef<Map<string, THREE.Group>>(new Map());
   const cubiePopProgressRef = useRef<Map<string, number>>(new Map());
   const tileTapStateRef = useRef<{ pointerId: number; x: number; y: number; moved: boolean; tileId: string } | null>(null);
   const mobileTapPendingRef = useRef<{ tileId: string } | null>(null);
   const lastInteractionRef = useRef<number>(Date.now() - IDLE_DELAY_MS);
   const isUserInteractingRef = useRef(false);
   const activeFaceRef = useRef<CubeFace>("front");
+  const stickerWorldQuaternionRef = useRef(new THREE.Quaternion());
+  const stickerWorldNormalRef = useRef(new THREE.Vector3());
+  const stickerCameraUpRef = useRef(new THREE.Vector3());
+  const stickerProjectedUpRef = useRef(new THREE.Vector3());
+  const stickerCurrentUpRef = useRef(new THREE.Vector3());
+  const stickerCrossRef = useRef(new THREE.Vector3());
   const [hovered, setHovered] = useState<HoveredTile | null>(null);
   const [controlsEnabled, setControlsEnabled] = useState(true);
   const [isAutoRotating, setIsAutoRotating] = useState(false);
@@ -464,6 +471,7 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
     const now = Date.now();
     const canRunIdleFaceTurns =
       ENABLE_IDLE_FACE_TURNS &&
+      !lowPerfMode &&
       !reducedMotion &&
       !openPanelId &&
       !hovered &&
@@ -511,6 +519,7 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
     const idleFor = Date.now() - lastInteractionRef.current;
     if (
       ENABLE_IDLE_CUBE_ROTATION &&
+      !lowPerfMode &&
       !reducedMotion &&
       !openPanelId &&
       !isUserInteractingRef.current &&
@@ -521,6 +530,10 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
         group.rotation.y += delta * IDLE_ROTATE_SPEED;
         group.rotation.x += delta * (IDLE_ROTATE_SPEED * 0.6); // X puțin mai lent decât Y
       }
+
+    if (lowPerfMode && (activeAnimation || activeFaceTurnAnimation)) {
+      invalidate();
+    }
 
     const viewerDirection = camera.position.clone().normalize();
     let bestFace: CubeFace = "front";
@@ -710,22 +723,57 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
 
         {isInteractive && tile ? (
           <Suspense fallback={null}>
-            <Text
-              position={[0, 0, 0.012]}
-              fontSize={0.125}
-              maxWidth={STICKER_SIZE * 0.74}
-              lineHeight={1.0}
-              letterSpacing={0.02}
-              textAlign="center"
-              color="#0b1220"
-              anchorX="center"
-              anchorY="middle"
-              outlineWidth={0.004}
-              outlineColor="#f8fafc"
-              raycast={() => null}
+            <group
+              ref={(node) => {
+                const key = getStickerKey(face, x, y, z);
+                if (node) {
+                  stickerLabelGroupRefs.current.set(key, node);
+                } else {
+                  stickerLabelGroupRefs.current.delete(key);
+                }
+              }}
+              position={[0, 0, 0.0125]}
             >
-              {tile.label.toUpperCase()}
-            </Text>
+              {!lowPerfMode ? (
+                <Text
+                  position={[0.012, -0.012, -0.002]}
+                  fontSize={0.144}
+                  fontWeight={900}
+                  maxWidth={STICKER_SIZE * 0.78}
+                  lineHeight={0.96}
+                  letterSpacing={0.008}
+                  textAlign="center"
+                  color={isHovered ? "#164e63" : "#0f172a"}
+                  anchorX="center"
+                  anchorY="middle"
+                  fillOpacity={0.7}
+                  raycast={() => null}
+                >
+                  {tile.label.toUpperCase()}
+                </Text>
+              ) : null}
+
+              <Text
+                position={[0, 0, 0]}
+                fontSize={0.144}
+                fontWeight={900}
+                maxWidth={STICKER_SIZE * 0.78}
+                lineHeight={0.96}
+                letterSpacing={0.008}
+                textAlign="center"
+                color="#020617"
+                anchorX="center"
+                anchorY="middle"
+                outlineWidth={lowPerfMode ? 0.001 : 0.0022}
+                outlineColor="#67e8f9"
+                outlineBlur={lowPerfMode ? 0 : 0.001}
+                strokeWidth={lowPerfMode ? 0 : 0.0018}
+                strokeColor="#082f49"
+                raycast={() => null}
+              >
+                {tile.label.toUpperCase()}
+              </Text>
+            </group>
           </Suspense>
         ) : null}
 
@@ -760,6 +808,9 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
 
   useFrame((_, delta) => {
     const activeFaceTurns = activeFaceTurnsRef.current;
+    const cameraUpWorld = stickerCameraUpRef.current.set(0, 1, 0).applyQuaternion(camera.quaternion).normalize();
+    const enableReadableLabelRotation = !lowPerfMode;
+    const hoverPopDistance = lowPerfMode ? 0 : HOVER_POP_DISTANCE;
 
     for (const [x, y, z] of cubies) {
       const cubieKey = getCubieKey(x, y, z);
@@ -775,9 +826,9 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
 
       const eased = easeOutCubic(next);
       const cubieLength = Math.hypot(x, y, z) || 1;
-      const popX = (x / cubieLength) * HOVER_POP_DISTANCE * eased;
-      const popY = (y / cubieLength) * HOVER_POP_DISTANCE * eased;
-      const popZ = (z / cubieLength) * HOVER_POP_DISTANCE * eased;
+      const popX = (x / cubieLength) * hoverPopDistance * eased;
+      const popY = (y / cubieLength) * hoverPopDistance * eased;
+      const popZ = (z / cubieLength) * hoverPopDistance * eased;
 
       const matchingTurns = activeFaceTurns.filter((turn) =>
         isPieceInTurnLayer(x, y, z, turn.axis, turn.layer)
@@ -806,7 +857,8 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
       }
 
       for (const face of ALL_FACES) {
-        const stickerGroup = stickerGroupRefs.current.get(getStickerKey(face, x, y, z));
+        const stickerKey = getStickerKey(face, x, y, z);
+        const stickerGroup = stickerGroupRefs.current.get(stickerKey);
         if (!stickerGroup) continue;
         const [nx, ny, nz] = FACE_VECTORS[face];
         let stickerX = x * GAP + popX + nx * (EDGE / 2 + 0.01);
@@ -826,6 +878,38 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
             stickerGroup.quaternion.premultiply(turn.quaternion);
           }
         }
+
+        const labelGroup = stickerLabelGroupRefs.current.get(stickerKey);
+        if (!labelGroup) continue;
+
+        if (!enableReadableLabelRotation) {
+          labelGroup.rotation.set(0, 0, 0);
+          continue;
+        }
+
+        stickerGroup.updateWorldMatrix(true, false);
+
+        const stickerWorldQuaternion = stickerGroup.getWorldQuaternion(stickerWorldQuaternionRef.current);
+        const stickerWorldNormal = stickerWorldNormalRef.current.set(0, 0, 1).applyQuaternion(stickerWorldQuaternion).normalize();
+        const projectedUp = stickerProjectedUpRef.current.copy(cameraUpWorld).projectOnPlane(stickerWorldNormal);
+
+        if (projectedUp.lengthSq() < 1e-6) {
+          labelGroup.rotation.set(0, 0, 0);
+          continue;
+        }
+
+        projectedUp.normalize();
+
+        const currentUp = stickerCurrentUpRef.current
+          .set(0, 1, 0)
+          .applyQuaternion(stickerWorldQuaternion)
+          .projectOnPlane(stickerWorldNormal)
+          .normalize();
+        const cross = stickerCrossRef.current.crossVectors(currentUp, projectedUp);
+        const dot = THREE.MathUtils.clamp(currentUp.dot(projectedUp), -1, 1);
+        const angle = Math.atan2(stickerWorldNormal.dot(cross), dot);
+
+        labelGroup.rotation.set(0, 0, angle);
       }
     }
   });
@@ -928,9 +1012,11 @@ export default function ThreeCube({ onTileSelect, reducedMotion, lowPerfMode, on
     <div className="relative mx-auto h-[42svh] min-h-[280px] w-full max-w-[1100px] touch-none select-none overflow-visible sm:h-[56svh] sm:min-h-0 lg:h-[62svh]">
       <Canvas
         className="h-full w-full touch-none"
+        frameloop={mobileOptimizedMode ? "demand" : "always"}
         shadows={!mobileOptimizedMode}
-        dpr={mobileOptimizedMode ? [1, 1.1] : [1, 1.45]}
+        dpr={mobileOptimizedMode ? [0.85, 1] : [1, 1.45]}
         camera={{ fov: 36, position: [5.45, 5.15, 5.75] }}
+        gl={{ antialias: !mobileOptimizedMode, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.domElement.style.touchAction = "none";
         }}
