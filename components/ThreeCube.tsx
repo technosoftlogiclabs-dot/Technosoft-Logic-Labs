@@ -134,7 +134,7 @@ const FACE_BASE_QUATERNIONS: Record<CubeFace, THREE.Quaternion> = {
 };
 
 function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onHoverLabelChange, onAutoRotateComplete }: Props) {
-  const { gl, camera, invalidate } = useThree();
+  const { gl, camera } = useThree();
   const controlsRef = useRef<TrackballControlsImpl | null>(null);
   const groupRef = useRef<THREE.Group>(null);
   const pointerNdcRef = useRef(new THREE.Vector2());
@@ -471,7 +471,6 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
     const now = Date.now();
     const canRunIdleFaceTurns =
       ENABLE_IDLE_FACE_TURNS &&
-      !lowPerfMode &&
       !reducedMotion &&
       !openPanelId &&
       !hovered &&
@@ -519,7 +518,6 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
     const idleFor = Date.now() - lastInteractionRef.current;
     if (
       ENABLE_IDLE_CUBE_ROTATION &&
-      !lowPerfMode &&
       !reducedMotion &&
       !openPanelId &&
       !isUserInteractingRef.current &&
@@ -530,10 +528,6 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
         group.rotation.y += delta * IDLE_ROTATE_SPEED;
         group.rotation.x += delta * (IDLE_ROTATE_SPEED * 0.6); // X puțin mai lent decât Y
       }
-
-    if (lowPerfMode && (activeAnimation || activeFaceTurnAnimation)) {
-      invalidate();
-    }
 
     const viewerDirection = camera.position.clone().normalize();
     let bestFace: CubeFace = "front";
@@ -1012,11 +1006,10 @@ export default function ThreeCube({ onTileSelect, reducedMotion, lowPerfMode, on
     <div className="relative mx-auto h-[42svh] min-h-[280px] w-full max-w-[1100px] touch-none select-none overflow-visible sm:h-[56svh] sm:min-h-0 lg:h-[62svh]">
       <Canvas
         className="h-full w-full touch-none"
-        frameloop={mobileOptimizedMode ? "demand" : "always"}
         shadows={!mobileOptimizedMode}
-        dpr={mobileOptimizedMode ? [0.85, 1] : [1, 1.45]}
+        dpr={mobileOptimizedMode ? [1, 1.1] : [1, 1.45]}
         camera={{ fov: 36, position: [5.45, 5.15, 5.75] }}
-        gl={{ antialias: !mobileOptimizedMode, powerPreference: "high-performance" }}
+        gl={{ powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.domElement.style.touchAction = "none";
         }}
