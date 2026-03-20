@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import { Text, TrackballControls } from "@react-three/drei";
 import * as THREE from "three";
@@ -245,27 +245,36 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
   useEffect(() => {
     const clearHover = () => scheduleHoverClear();
     const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const syncControlsBounds = () => {
+      controlsRef.current?.handleResize();
+    };
     const onPointerDown = (event: PointerEvent) => {
+      syncControlsBounds();
       const rect = gl.domElement.getBoundingClientRect();
       const group = groupRef.current;
 
-      let isPointerOnCube = false;
-      if (group) {
-        pointerNdcRef.current.set(
-          ((event.clientX - rect.left) / rect.width) * 2 - 1,
-          -(((event.clientY - rect.top) / rect.height) * 2 - 1)
-        );
-        raycasterRef.current.setFromCamera(pointerNdcRef.current, camera);
-        isPointerOnCube = raycasterRef.current.intersectObject(group, true).length > 0;
+      if (!rect.width || !rect.height || !group || cubieMeshRefs.current.size === 0) {
+        setControlsEnabled(true);
+        return;
       }
 
+      camera.updateMatrixWorld();
+      group.updateMatrixWorld(true);
+
+      let isPointerOnCube = false;
+      pointerNdcRef.current.set(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -(((event.clientY - rect.top) / rect.height) * 2 - 1)
+      );
+      raycasterRef.current.setFromCamera(pointerNdcRef.current, camera);
+      isPointerOnCube = raycasterRef.current.intersectObject(group, true).length > 0;
+
       setControlsEnabled(isPointerOnCube);
+      if (controlsRef.current) {
+        controlsRef.current.enabled = isPointerOnCube && !openPanelId && !isAutoRotating;
+      }
       if (!isPointerOnCube) {
-        if (controlsRef.current) {
-          controlsRef.current.enabled = false;
-        }
         gl.domElement.style.cursor = "default";
-        event.stopImmediatePropagation();
       }
 
       if (previousUserSelectRef.current === null) {
@@ -317,7 +326,10 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
     window.addEventListener("pointerup", onPointerRelease);
     window.addEventListener("pointercancel", onPointerRelease);
     window.addEventListener("blur", onPointerRelease);
+    window.addEventListener("resize", syncControlsBounds);
     gl.domElement.style.cursor = "default";
+    gl.domElement.style.touchAction = "none";
+    const syncFrame = window.requestAnimationFrame(syncControlsBounds);
 
     return () => {
       if (supportsHover) {
@@ -329,7 +341,10 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
       window.removeEventListener("pointerup", onPointerRelease);
       window.removeEventListener("pointercancel", onPointerRelease);
       window.removeEventListener("blur", onPointerRelease);
+      window.removeEventListener("resize", syncControlsBounds);
+      window.cancelAnimationFrame(syncFrame);
       gl.domElement.style.cursor = "default";
+      gl.domElement.style.touchAction = "";
       cancelHoverClear();
       if (previousUserSelectRef.current !== null) {
         document.body.style.userSelect = previousUserSelectRef.current;
@@ -694,22 +709,24 @@ function CubeScene({ onTileSelect, reducedMotion, lowPerfMode, onFaceChange, onH
         </mesh>
 
         {isInteractive && tile ? (
-          <Text
-            position={[0, 0, 0.012]}
-            fontSize={0.125}
-            maxWidth={STICKER_SIZE * 0.74}
-            lineHeight={1.0}
-            letterSpacing={0.02}
-            textAlign="center"
-            color="#0b1220"
-            anchorX="center"
-            anchorY="middle"
-            outlineWidth={0.004}
-            outlineColor="#f8fafc"
-            raycast={() => null}
-          >
-            {tile.label.toUpperCase()}
-          </Text>
+          <Suspense fallback={null}>
+            <Text
+              position={[0, 0, 0.012]}
+              fontSize={0.125}
+              maxWidth={STICKER_SIZE * 0.74}
+              lineHeight={1.0}
+              letterSpacing={0.02}
+              textAlign="center"
+              color="#0b1220"
+              anchorX="center"
+              anchorY="middle"
+              outlineWidth={0.004}
+              outlineColor="#f8fafc"
+              raycast={() => null}
+            >
+              {tile.label.toUpperCase()}
+            </Text>
+          </Suspense>
         ) : null}
 
         {isInteractive ? (
@@ -908,12 +925,15 @@ export default function ThreeCube({ onTileSelect, reducedMotion, lowPerfMode, on
   };
 
   return (
-    <div className="relative mx-auto h-[42svh] min-h-[280px] w-full max-w-[1100px] select-none overflow-visible sm:h-[56svh] sm:min-h-0 lg:h-[62svh]">
+    <div className="relative mx-auto h-[42svh] min-h-[280px] w-full max-w-[1100px] touch-none select-none overflow-visible sm:h-[56svh] sm:min-h-0 lg:h-[62svh]">
       <Canvas
-        className="h-full w-full"
+        className="h-full w-full touch-none"
         shadows={!mobileOptimizedMode}
         dpr={mobileOptimizedMode ? [1, 1.1] : [1, 1.45]}
         camera={{ fov: 36, position: [5.45, 5.15, 5.75] }}
+        onCreated={({ gl }) => {
+          gl.domElement.style.touchAction = "none";
+        }}
       >
         <CubeScene
           onTileSelect={onTileSelect}
